@@ -1,0 +1,16 @@
+{
+	"name": "AzureSynapseSQLPoolActivityLogcsv",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSynapseAnalyticsSQLPoolService",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "PoolActivityLog"
+		}
+	}
+}
