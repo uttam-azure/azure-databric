@@ -1,0 +1,357 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "firstazuredatafactlearn"
+		},
+		"AzureSynapseAnalyticsSQLPoolService_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureSynapseAnalyticsSQLPoolService'"
+		},
+		"AzureZen2DatalakeStorageService_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'AzureZen2DatalakeStorageService'"
+		},
+		"AzureZen2DatalakeStorageService_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://azuredatazen2.dfs.core.windows.net/"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/01-githubintegrationpipeline-activity-csv')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "copyactivityLogcsv",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "SqlDWSink",
+								"writeBehavior": "Insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Correlation id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Correlationid",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Operation name",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Operationname",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Status",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Status",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Event category",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Eventcategory",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Level",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Level",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Time",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Time",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Subscription",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Subscription",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Event initiated by",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Eventinitiatedby",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Resource type",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Resourcetype",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Resource group",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Resourcegroup",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Resource",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Resource",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "azurezen2activityLogcsv",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "AzureSynapseSQLPoolActivityLogcsv",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/azurezen2activityLogcsv')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSynapseSQLPoolActivityLogcsv')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSynapseSQLPoolActivityLogcsv')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSynapseAnalyticsSQLPoolService",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "PoolActivityLog"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSynapseAnalyticsSQLPoolService')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/azurezen2activityLogcsv')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureZen2DatalakeStorageService",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "*",
+						"fileSystem": "csv"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Correlation id",
+						"type": "String"
+					},
+					{
+						"name": "Operation name",
+						"type": "String"
+					},
+					{
+						"name": "Status",
+						"type": "String"
+					},
+					{
+						"name": "Event category",
+						"type": "String"
+					},
+					{
+						"name": "Level",
+						"type": "String"
+					},
+					{
+						"name": "Time",
+						"type": "String"
+					},
+					{
+						"name": "Subscription",
+						"type": "String"
+					},
+					{
+						"name": "Event initiated by",
+						"type": "String"
+					},
+					{
+						"name": "Resource type",
+						"type": "String"
+					},
+					{
+						"name": "Resource group",
+						"type": "String"
+					},
+					{
+						"name": "Resource",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureZen2DatalakeStorageService')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSynapseAnalyticsSQLPoolService')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDW",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureSynapseAnalyticsSQLPoolService_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureZen2DatalakeStorageService')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('AzureZen2DatalakeStorageService_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('AzureZen2DatalakeStorageService_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}

@@ -1,0 +1,18 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "firstazuredatafactlearn"
+		},
+		"AzureSynapseAnalyticsSQLPoolService_connectionString": {
+			"value": ""
+		},
+		"AzureZen2DatalakeStorageService_accountKey": {
+			"value": ""
+		},
+		"AzureZen2DatalakeStorageService_properties_typeProperties_url": {
+			"value": "https://azuredatazen2.dfs.core.windows.net/"
+		}
+	}
+}
